@@ -4,7 +4,9 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -15,7 +17,7 @@ import java.util.Objects;
  */
 public class BeanDefinition {
 
-    //  类
+    // 类
     private final Class<?> type;
     // bean的名称
     private String name;
@@ -53,14 +55,17 @@ public class BeanDefinition {
         }
     }
 
+    // 获得生命周期方法
     public Method getPostConstruct(){
         return postConstruct;
     }
 
+    // 获得自动注入的字段
     public Field[] getAutowiredFields(){
         return autowiredFields;
     }
 
+    // 获得bean的类型
     public Class<?> getType(){
         return type;
     }

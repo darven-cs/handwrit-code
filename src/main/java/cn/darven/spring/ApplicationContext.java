@@ -28,6 +28,9 @@ public class ApplicationContext {
 
     private Map<String, BeanDefinition> beanDefinitionMap;
 
+    // 添加全局 BeanPostProcessor 列表
+    private List<BeanPostProcessor> beanPostProcessors = new ArrayList<>();
+
     public ApplicationContext(String packageName) throws IOException, URISyntaxException {
         this.ioc = new HashMap<>();
         this.loadIoc = new HashMap<>();
@@ -41,13 +44,20 @@ public class ApplicationContext {
         // 怎么造对象，参数，自动注入，生命周期
 
         // 先注册beanDefinition
-        List<BeanDefinition> beanDefinitionList = scanPackage(packageName)
+        scanPackage(packageName)
                 .stream()
                 .filter(this::hasAnnotation)  // 过滤
                 .map(this::createBeanDefinition) // 映射  .forEach(this::registerBean);   // 添加
                 .toList();
+
+        beanDefinitionMap.values().stream()
+                .filter(bd->BeanPostProcessor.class.isAssignableFrom(bd.getType()))
+                .map(this::registerBean)
+                .map(BeanPostProcessor.class::cast)
+                .forEach(beanPostProcessors::add);
+
         // 然后注册 bean，可以避免出现注入依赖的时候不存在问题
-        beanDefinitionList.stream()
+        beanDefinitionMap.values().stream()
                 .forEach(this::registerBean);
 
     }
@@ -57,6 +67,9 @@ public class ApplicationContext {
         String name = beanDefinition.getName();
         if(ioc.containsKey( name)){
             return ioc.get(name);
+        }
+        if(loadIoc.containsKey(name)){
+            return loadIoc.get(name);
         }
         return doCreateBean(beanDefinition);
     }
@@ -75,11 +88,14 @@ public class ApplicationContext {
             autowired(beanDefinition, bean);
 
             // 反射调用postStruct函数
-            initBean(beanDefinition, bean);
+            bean = initBean(beanDefinition, bean);
+
+            loadIoc.remove(beanDefinition.getName());
+            ioc.put(beanDefinition.getName(), bean);
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
             throw new RuntimeException(e);
         }
-        ioc.put(beanDefinition.getName(), loadIoc.remove(beanDefinition.getName()));
+
         return bean;
     }
 
@@ -103,11 +119,22 @@ public class ApplicationContext {
     /**
      * 初始化bean
      * */
-    private void initBean(BeanDefinition beanDefinition, Object bean) throws InvocationTargetException, IllegalAccessException {
+    private Object initBean(BeanDefinition beanDefinition, Object bean) throws InvocationTargetException, IllegalAccessException {
+        // 遍历所有 BeanPostProcessor
+        for (BeanPostProcessor processor : beanPostProcessors) {
+            bean = processor.postProcessBeforeInitialization(bean, beanDefinition.getName());
+        }
+
         Method postConstruct = beanDefinition.getPostConstruct();
         if(postConstruct!=null){
             postConstruct.invoke(bean);
         }
+
+        for (BeanPostProcessor processor : beanPostProcessors) {
+            bean = processor.postProcessAfterInitialization(bean, beanDefinition.getName());
+        }
+
+        return bean;
     }
 
     // 如果是Component注解的类，创建BeanDefinition
@@ -174,14 +201,11 @@ public class ApplicationContext {
         if(ioc.containsKey(beanName)){
             return ioc.get(beanName);
         }
-        if(loadIoc.containsKey(beanName)){
-            return loadIoc.get(beanName);
-        }
+
         // 如果不存在，创建对象
         if (beanDefinitionMap.containsKey(beanName)) {
             BeanDefinition beanDefinition = beanDefinitionMap.get(beanName);
-            doCreateBean(beanDefinition);
-            return ioc.get(beanName);
+            return registerBean(beanDefinition);
         }
         return null;
     }
