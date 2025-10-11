@@ -1,4 +1,4 @@
-package cn.darven.spring;
+package cn.darven.spring.ioc;
 
 import java.io.File;
 import java.io.IOException;

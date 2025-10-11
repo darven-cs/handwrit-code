@@ -1,4 +1,4 @@
-package cn.darven.spring;
+package cn.darven.spring.ioc;
 
 /**
  * @author darven

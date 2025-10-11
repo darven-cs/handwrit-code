@@ -1,13 +1,13 @@
-package cn.darven.spring.sub;
+package cn.darven.spring.ioc.sub;
 
-import cn.darven.spring.BeanPostProcessor;
-import cn.darven.spring.Component;
-import cn.darven.spring.PostConstruct;
+import cn.darven.spring.ioc.BeanPostProcessor;
+import cn.darven.spring.ioc.Component;
 
 /**
  * @author darven
  * @date 2025/10/11
- * @description TODO
+ * @description BeanPostProcessor是全局的初始化
+ * 为什么要全局化，其他模块一次拓展
  */
 @Component
 public class MyPostProcesser implements BeanPostProcessor {

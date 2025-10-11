@@ -1,4 +1,4 @@
-package cn.darven.spring;
+package cn.darven.spring.ioc;
 
 import java.io.IOException;
 import java.net.URISyntaxException;

@@ -1,8 +1,8 @@
-package cn.darven.spring.sub;
+package cn.darven.spring.ioc.sub;
 
-import cn.darven.spring.Autowired;
-import cn.darven.spring.Component;
-import cn.darven.spring.PostConstruct;
+import cn.darven.spring.ioc.Autowired;
+import cn.darven.spring.ioc.Component;
+import cn.darven.spring.ioc.PostConstruct;
 
 /**
  * @author darven
