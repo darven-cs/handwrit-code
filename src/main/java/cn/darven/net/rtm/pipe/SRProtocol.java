@@ -16,7 +16,7 @@ public class SRProtocol {
 
     /* ========== 协议常量 ========== */
     static final int MAX_SEQ = 32;          // 序号空间 0..31
-    static final int WIN_SIZE = MAX_SEQ / 2; // 16
+    static final int WIN_SIZE = MAX_SEQ / 2; // 16  // 窗口大小不能大于 MAX_SEQ/2
     static final int PKT_DATA_LEN = 32;       // 数据部分字节数
     static final int BASE_PORT = 8888;
     static final double LOSS_RATE = 0.10;     // 模拟丢包
