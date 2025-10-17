@@ -18,35 +18,35 @@ public class ReentrantLocKDemo {
     }
 
     private static void testLockPerformance(Counter counter) throws InterruptedException {
-        int threads = 10;
+        int threads = 20;
         ExecutorService pool = Executors.newFixedThreadPool(threads);
         CountDownLatch latch = new CountDownLatch(threads);
 
         long start = System.currentTimeMillis();
 
-//        for (int i = 0; i < threads; i++) {
-//            pool.execute(() -> {
-//                for (int j = 0; j < 10000; j++) {
-//                    if (j % 10 == 0) {
-//                        counter.add();       // 少量写操作
-//                    } else {
-//                        counter.get();       // 大量读操作
-//                    }
-//                }
-//                latch.countDown();
-//            });
-//        }
-        for (int i = 0; i < 10; i++) {
+        // 启动 19 个读线程
+        for (int i = 0; i < 19; i++) {
             pool.execute(() -> {
-                for (int j = 0; j < 10000; j++) {
-                    counter.get(); // 只读
+                for (int j = 0; j < 1_000_000; j++) {
+                    int v = counter.get();
+                    // 模拟读取代价更高（I/O、复杂计算）
+                    for (int k = 0; k < 100; k++) {
+                        Math.sqrt(v * k);
+                    }
                 }
                 latch.countDown();
             });
         }
+
+        // 启动 1 个写线程
         pool.execute(() -> {
-            for (int j = 0; j < 1000; j++) {
-                counter.add(); // 写操作很少
+            for (int j = 0; j < 100; j++) {
+                counter.add();
+                try {
+                    Thread.sleep(10); // 模拟写操作不频繁
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
             }
             latch.countDown();
         });
