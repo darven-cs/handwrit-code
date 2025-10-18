@@ -46,6 +46,16 @@
 - 支持基本HTTP请求处理和响应返回
 - 实现优雅停机机制
 
+### Tomcat NIO实现
+- 基于非阻塞I/O的HTTP服务器实现
+- Reactor模式：主线程监听连接，线程池处理请求
+- 核心组件：
+  - Acceptor: 连接监听器和分发器
+  - Processor: HTTP请求处理器
+  - ThreadPoolConfig: 线程池配置
+- 支持基本HTTP请求处理和响应返回
+- 实现优雅停机机制
+
 ## ✅ 完成清单
 - [ ] IOC 容器实现
     - [ ] `BeanFactory` 核心接口设计
@@ -94,6 +104,13 @@
      - -[ ] 流量控制与拥塞控制
 - [x] Tomcat BIO实现
   - [x] 阻塞式Socket通信
+  - [x] 多线程请求处理
+  - [x] HTTP协议解析
+  - [x] 线程池资源管理
+  - [x] 优雅停机机制
+
+- [x] Tomcat NIO实现
+  - [x] 非阻塞式Socket通信
   - [x] 多线程请求处理
   - [x] HTTP协议解析
   - [x] 线程池资源管理
