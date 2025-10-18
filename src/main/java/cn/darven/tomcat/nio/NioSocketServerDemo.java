@@ -53,7 +53,7 @@ public class NioSocketServerDemo {
                         // 读就绪事件
                         clientSocket.register(selector,SelectionKey.OP_READ,ByteBuffer.allocate(1024));
                     }
-
+                    // 处理读就绪事件
                     else if(key.isReadable()){
                         SocketChannel clientChannel = (SocketChannel) key.channel();
                         ByteBuffer buffer =(ByteBuffer) key.attachment();
@@ -75,6 +75,7 @@ public class NioSocketServerDemo {
 
                         buffer.clear();
                     }
+
                 }
             }
         } catch (IOException e) {
